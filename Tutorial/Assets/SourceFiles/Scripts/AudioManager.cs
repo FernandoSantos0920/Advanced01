@@ -7,29 +7,38 @@ public class AudioManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
   
     
-    public static AudioManager Instance;
+   
 
     
     [SerializeField] private AudioSource audioSource;
-    [SerializeField] List<AudioClip> audioClip;
+    [SerializeField] List<AudioSource> activeSource;
     
+     
+    #region Singleton Logic
     
-    private void Awake()
-    {
-        if (Instance == null)
+     public static AudioManager Instance;
+         
+        private void Awake()
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+                audioSource = GetComponent<AudioSource>();
+                activeSource = new List<AudioSource>();
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    
+   
+
 
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+       
     }
 
     // Update is called once per frame
@@ -37,20 +46,79 @@ public class AudioManager : MonoBehaviour
     {
         
     }
+ #endregion
+  
+    
+    #region 2D Audio Logic
 
-    public void StartSound(int clipIndex)
+    
+
+    public void Play(AudioClip clip)
+       {
+          audioSource.Stop();
+          audioSource.clip = clip;
+          audioSource.Play();
+           
+       }
+   
+   
+   
+       public void PlayOneShot(AudioClip clip)
+       {
+           audioSource.PlayOneShot(clip);
+       }
+   
+       public void Stop()
+       {
+           audioSource.Stop();
+       }
+   
+       public void Resume()
+       {
+           audioSource.UnPause();
+       }
+       
+       public void Pause()
+       {
+           audioSource.Pause();
+       }
+       
+    
+    
+    
+    #endregion
+
+
+    #region 3D Audio Logic
+    
+    
+    public void Play(AudioClip clip, AudioSource source)
     {
-        audioSource.clip = audioClip[clipIndex];
-        audioSource.Play();
+        if (!activeSource.Contains(source))
+            activeSource.Add(source);
+        source.Stop();
+        source.clip = clip;
+        source.Play();
         
     }
 
 
-
-    public void StopSound(int clipIndex)
+    public void Stop(AudioSource source)
     {
-        
-        audioSource.clip = null;
-        audioSource.Stop();
+        if(activeSource.Contains(source))
+            activeSource.Remove(source);
+        source.Stop();
     }
+
+    public void Resume(AudioSource source)
+    {
+        source.UnPause();
+    }
+    
+    public void Pause(AudioSource source)
+    {
+        source.Pause();
+    }
+
+    #endregion
 }
