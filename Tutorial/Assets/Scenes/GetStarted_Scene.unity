@@ -805,52 +805,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1473190542}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &548295157
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 548295159}
-  - component: {fileID: 548295158}
-  m_Layer: 0
-  m_Name: Audio Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &548295158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 548295157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ece11582af684f9469e8dc41e14deb12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  audioSource: {fileID: 1225694813}
-  activeSource: []
---- !u!4 &548295159
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 548295157}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.92645, y: -0, z: 32.44185}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &564932980
 GameObject:
   m_ObjectHideFlags: 0
@@ -2166,11 +2120,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1122523517}
   m_Mesh: {fileID: 7718662893383318277, guid: d2f0da3998423f44594868ffed55c3e6, type: 3}
---- !u!82 &1225694813 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 5591251104891908895, guid: eec314210e1dc46cb9e7c22b77508353, type: 3}
-  m_PrefabInstance: {fileID: 2107469240}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1299503307
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4484,7 +4433,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.15564343, y: -3.97, z: 4.0353847}
+  m_Size: {x: 0.15564343, y: 3.97, z: 4.0353847}
   m_Center: {x: -1.9180392, y: 0, z: 1.9894083}
 --- !u!65 &2127103715
 BoxCollider:
@@ -5922,6 +5871,5 @@ SceneRoots:
   - {fileID: 208025585}
   - {fileID: 1602001850}
   - {fileID: 1473190542}
-  - {fileID: 548295159}
   - {fileID: 1879132364}
   - {fileID: 690019162}

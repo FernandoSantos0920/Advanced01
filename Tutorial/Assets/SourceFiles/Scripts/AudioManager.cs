@@ -10,8 +10,8 @@ public class AudioManager : MonoBehaviour
    
 
     
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] List<AudioSource> activeSource;
+     private AudioSource audioSource;
+     private List<AudioSource> activeSource;
     
      
     #region Singleton Logic
