@@ -22,14 +22,16 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            changeState = State.Iniciando;
+            
         }
         else
         { 
             Destroy(gameObject);
         }
         
-        changeState = State.Iniciando;
-        Debug.Log(changeState);
+        
+       
     }
   
     #endregion
@@ -37,38 +39,21 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        
+      
     }
     // Update is called once per frame
     void Update()
     {
+        ChangeState(changeState);
+        Debug.Log(changeState);
 
-        switch (changeState)
+        if (SceneManager.GetActiveScene().name == "Menu")
         {
-            case State.Iniciando:
-               
-                
-              
-                break;
-            
-            
-            case State.MenuPrincipal:
-              
-                
-                
-                break;
-          
-            case State.Gameplay :
-               
-             
-                
-                break;
-            
-            
+            changeState = State.MenuPrincipal;
         }
     }
 
-    private enum State
+    public enum State
     {
         Iniciando,
         MenuPrincipal,
@@ -76,4 +61,38 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void ChangeState(State newState)
+    {
+        if (changeState == newState)
+        {
+            return;
+        }
+
+        changeState = newState;
+
+          switch (changeState)
+          {
+                    case State.Iniciando:
+                      
+                        break;
+
+
+                    case State.MenuPrincipal:
+
+                        SceneManager.LoadScene(1);
+
+                        break;
+
+                    case State.Gameplay :
+
+                        SceneManager.LoadScene(2);
+
+                        break;
+
+
+          }
+    }
+    
+    
+    
 }
