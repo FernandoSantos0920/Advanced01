@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +8,7 @@ public class GameManager : MonoBehaviour
 {
   
     public static GameManager Instance;
-    
+    private PlayerInput playerInput;
     
     private State changeState;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -44,13 +45,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ChangeState(changeState);
+        
         Debug.Log(changeState);
 
-        if (SceneManager.GetActiveScene().name == "Menu")
-        {
-            changeState = State.MenuPrincipal;
-        }
+        
     }
 
     public enum State
@@ -73,26 +71,74 @@ public class GameManager : MonoBehaviour
           switch (changeState)
           {
                     case State.Iniciando:
-                      
+                      DesativarInput();
                         break;
 
 
                     case State.MenuPrincipal:
-
-                        SceneManager.LoadScene(1);
-
+                        AtivarInput();
+                        SceneManager.LoadScene(2);
+                        
                         break;
 
                     case State.Gameplay :
-
-                        SceneManager.LoadScene(2);
+                        AtivarInput();
+                        SceneManager.LoadScene(3);
 
                         break;
 
 
           }
     }
+
+    #region InputPlayer
+
+
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        playerInput = FindFirstObjectByType<PlayerInput>();
+
+        if (playerInput != null)
+        {
+            Debug.Log("Input Achado");
+            
+        }
+        else
+        {
+            Debug.Log("Input Perdido?");
+        }
+    }
     
     
     
+    
+    public void DesativarInput()
+    {
+        if (playerInput != null)
+        {
+             playerInput.DeactivateInput();
+        }
+          
+    }
+
+    public void AtivarInput()
+    {
+        if (playerInput != null)
+        {
+            playerInput.ActivateInput();
+        }
+    }
+    
+    #endregion
 }
