@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     private PlayerInput playerInput;
 
     
-    private State changeState = (State)(-1);
+    private State changeState;
 
     #region Singleton
 
@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            changeState = State.Iniciando;
         }
         else
         {
@@ -44,7 +45,7 @@ public class GameManager : MonoBehaviour
         
         Debug.Log("Boot finalizado");
 
-        ChangeState(State.Iniciando);
+        SceneManager.LoadScene(1);
     }
 
     void Update()
@@ -62,7 +63,10 @@ public class GameManager : MonoBehaviour
     public void ChangeState(State newState)
     {
         if (changeState == newState)
-            return;
+        {
+              return;
+        }
+          
 
         changeState = newState;
         
@@ -70,13 +74,13 @@ public class GameManager : MonoBehaviour
         switch (changeState)
         {
             case State.Iniciando:
-                SceneManager.LoadScene(1);
+               
                 DesativarInput();
                 break;
 
             case State.MenuPrincipal:
                 SceneManager.LoadScene(2);
-                AtivarInput();
+                DesativarInput();
                 break;
 
             case State.Gameplay:
@@ -104,11 +108,11 @@ public class GameManager : MonoBehaviour
 
         if (playerInput != null)
         {
-            Debug.Log("Input Valido");
+           Debug.Log("Input Valido");
         }
         else
         {
-            Debug.Log("Input Invalido");
+          Debug.Log("Input Invalido");
         }
     }
 
