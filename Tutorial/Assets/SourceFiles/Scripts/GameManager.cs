@@ -1,54 +1,55 @@
-using System.Diagnostics;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Debug = UnityEngine.Debug;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-  
     public static GameManager Instance;
     private PlayerInput playerInput;
+
     
-    private State changeState;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private State changeState = (State)(-1);
 
     #region Singleton
-    
+
     void Awake()
     {
-        
-        
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            changeState = State.Iniciando;
-            
         }
         else
-        { 
+        {
             Destroy(gameObject);
+            return;
         }
-        
-        
-       
     }
-  
+
     #endregion
-   
-    
+
     void Start()
     {
-      
+       
+        StartCoroutine(IniciarDepoisDoBoot());
     }
-    // Update is called once per frame
+
+    IEnumerator IniciarDepoisDoBoot()
+    {
+       for(int i = 0; i < 5; i++)
+        {
+            yield return null;
+        }
+        
+        Debug.Log("Boot finalizado");
+
+        ChangeState(State.Iniciando);
+    }
+
     void Update()
     {
-        
         Debug.Log(changeState);
-
-        
     }
 
     public enum State
@@ -58,52 +59,44 @@ public class GameManager : MonoBehaviour
         Gameplay
     }
 
-
     public void ChangeState(State newState)
     {
         if (changeState == newState)
-        {
             return;
-        }
 
         changeState = newState;
+        
 
-          switch (changeState)
-          {
-                    case State.Iniciando:
-                      DesativarInput();
-                        break;
+        switch (changeState)
+        {
+            case State.Iniciando:
+                SceneManager.LoadScene(1);
+                DesativarInput();
+                break;
 
+            case State.MenuPrincipal:
+                SceneManager.LoadScene(2);
+                AtivarInput();
+                break;
 
-                    case State.MenuPrincipal:
-                        AtivarInput();
-                        SceneManager.LoadScene(2);
-                        
-                        break;
-
-                    case State.Gameplay :
-                        AtivarInput();
-                        SceneManager.LoadScene(3);
-
-                        break;
-
-
-          }
+            case State.Gameplay:
+                SceneManager.LoadScene(3);
+                AtivarInput();
+                break;
+        }
     }
 
     #region InputPlayer
-
-
 
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
     void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -111,34 +104,25 @@ public class GameManager : MonoBehaviour
 
         if (playerInput != null)
         {
-            Debug.Log("Input Achado");
-            
+            Debug.Log("Input Valido");
         }
         else
         {
-            Debug.Log("Input Perdido?");
+            Debug.Log("Input Invalido");
         }
     }
-    
-    
-    
-    
+
     public void DesativarInput()
     {
         if (playerInput != null)
-        {
-             playerInput.DeactivateInput();
-        }
-          
+            playerInput.DeactivateInput();
     }
 
     public void AtivarInput()
     {
         if (playerInput != null)
-        {
             playerInput.ActivateInput();
-        }
     }
-    
+
     #endregion
 }

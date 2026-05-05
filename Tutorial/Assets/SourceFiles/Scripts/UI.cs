@@ -19,7 +19,13 @@ public class UI : MonoBehaviour
     }
 
     public void Play()
-    {
+    {   
+        Debug.Log("Mudando para estado: Gameplay");
         GameManager.Instance.ChangeState(GameManager.State.Gameplay);
+    }
+    
+    public void Quit()
+    {   
+       Application.Quit();
     }
 }
