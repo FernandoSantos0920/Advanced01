@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             changeState = State.Iniciando;
+            Debug.Log(changeState);
         }
         else
         {
@@ -43,14 +44,14 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         
-        Debug.Log("Boot finalizado");
+      //  Debug.Log("Boot finalizado");
 
         SceneManager.LoadScene(1);
     }
 
     void Update()
     {
-        Debug.Log(changeState);
+       // Debug.Log(changeState);
     }
 
     public enum State
@@ -73,20 +74,37 @@ public class GameManager : MonoBehaviour
 
         switch (changeState)
         {
-            case State.Iniciando:
+               case State.Iniciando:
                
                 DesativarInput();
                 break;
 
             case State.MenuPrincipal:
-                SceneManager.LoadScene(2);
+               
+                Debug.Log(changeState);
                 DesativarInput();
                 break;
 
             case State.Gameplay:
-                SceneManager.LoadScene(3);
+               
+                Debug.Log(changeState);
                 AtivarInput();
                 break;
+        }
+    }
+
+
+    public void TrocaDeCena(string NomeCena)
+    {
+        SceneManager.LoadScene(NomeCena);
+
+        if (NomeCena == "Menu")
+        {
+            ChangeState(State.MenuPrincipal);
+        }
+        else if (NomeCena == "GetStarted_Scene")
+        {
+           ChangeState(State.Gameplay);
         }
     }
 
@@ -108,11 +126,11 @@ public class GameManager : MonoBehaviour
 
         if (playerInput != null)
         {
-           Debug.Log("Input Valido");
+          // Debug.Log("Input Valido");
         }
         else
         {
-          Debug.Log("Input Invalido");
+         // Debug.Log("Input Invalido");
         }
     }
 

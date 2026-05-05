@@ -20,8 +20,8 @@ public class UI : MonoBehaviour
 
     public void Play()
     {   
-        Debug.Log("Mudando para estado: Gameplay");
-        GameManager.Instance.ChangeState(GameManager.State.Gameplay);
+       // Debug.Log("Mudando para estado: Gameplay");
+        GameManager.Instance.TrocaDeCena("GetStarted_Scene");
     }
     
     public void Quit()
