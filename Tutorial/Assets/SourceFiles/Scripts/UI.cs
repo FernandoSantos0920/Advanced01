@@ -21,7 +21,8 @@ public class UI : MonoBehaviour
     public void Play()
     {   
        // Debug.Log("Mudando para estado: Gameplay");
-        GameManager.Instance.TrocaDeCena("GetStarted_Scene");
+        GameManager.Instance.TrocaDeCena("GetStarted_Scene", "UI");
+        
     }
     
     public void Quit()

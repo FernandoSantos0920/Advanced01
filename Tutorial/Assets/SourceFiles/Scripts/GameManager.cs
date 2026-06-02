@@ -94,9 +94,10 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void TrocaDeCena(string NomeCena)
+    public void TrocaDeCena(string NomeCena, string NomeCena2)
     {
         SceneManager.LoadScene(NomeCena);
+        SceneManager.LoadScene(NomeCena2, LoadSceneMode.Additive);
 
         if (NomeCena == "Menu")
         {
@@ -107,6 +108,8 @@ public class GameManager : MonoBehaviour
            ChangeState(State.Gameplay);
         }
     }
+    
+    
 
     #region InputPlayer
 
