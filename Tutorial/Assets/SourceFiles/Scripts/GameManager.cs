@@ -97,7 +97,12 @@ public class GameManager : MonoBehaviour
     public void TrocaDeCena(string NomeCena, string NomeCena2)
     {
         SceneManager.LoadScene(NomeCena);
-        SceneManager.LoadScene(NomeCena2, LoadSceneMode.Additive);
+
+        if (NomeCena2 != null)
+        {
+             SceneManager.LoadScene(NomeCena2, LoadSceneMode.Additive);
+        }
+       
 
         if (NomeCena == "Menu")
         {
