@@ -10,4 +10,11 @@ public static class PlayerOM
     {
        ChangeCoins?.Invoke(quantidade);
     }
+    
+    public static event Action<bool> Colidiu;
+
+    public static void ColidiuIsChanged(bool value)
+    {
+        Colidiu?.Invoke(value);
+    }
 }
