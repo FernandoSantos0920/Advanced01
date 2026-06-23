@@ -12,4 +12,9 @@ public static class PlayerOM
        ChangeCoins?.Invoke(quantidade);
     }
     
+    public static void CoinAreCollected()
+    {
+        CollectedCoin?.Invoke();
+    }
+    
 }

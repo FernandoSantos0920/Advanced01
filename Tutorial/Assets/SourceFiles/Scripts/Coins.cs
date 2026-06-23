@@ -20,7 +20,7 @@ public class Coins : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            PlayerOM.CollectedCoin?.Invoke();
+            PlayerOM.CoinAreCollected();
             Destroy(gameObject);
         }
     }
