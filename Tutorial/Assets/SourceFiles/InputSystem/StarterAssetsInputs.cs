@@ -20,7 +20,10 @@ namespace StarterAssets
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
-
+		[Header("Input Values IFRN")]
+		
+		private PlayerInput playerInput;
+		
 
 #if ENABLE_INPUT_SYSTEM
 		
@@ -58,7 +61,44 @@ namespace StarterAssets
 		
 	}
 
-		public void MoveInput(Vector2 newMoveDirection)
+	private void Start()
+	{
+		playerInput = GetComponent<PlayerInput>();
+	
+		//Move
+		playerInput.actions.FindAction("Move").performed += OnMovePerformed;
+		playerInput.actions.FindAction("Move").canceled += context => move = Vector2.zero;
+		
+		//Look
+		playerInput.actions.FindAction("Look").performed += OnLookPerformed;
+		playerInput.actions.FindAction("Move").canceled += context => look = Vector2.zero;
+		
+		//Jump
+		playerInput.actions.FindAction("Jump").started += context => jump = true;
+		playerInput.actions.FindAction("Jump").canceled += context => jump = false;
+		
+		
+		//Sprint
+		playerInput.actions.FindAction("Sprint").started += context => sprint = true;
+		playerInput.actions.FindAction("Sprint").canceled += context => sprint = false;
+		
+		//playerInput.actions.FindAction("Interact").started += context => InteractOM = true;
+	}
+
+
+	private void OnMovePerformed(InputAction.CallbackContext context)
+	{
+		move = context.action.ReadValue<Vector2>();
+	}
+
+	private void OnLookPerformed(InputAction.CallbackContext context)
+	{
+		look = context.action.ReadValue<Vector2>();
+	}
+	
+	#region Old Input System
+
+	public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
@@ -90,6 +130,34 @@ namespace StarterAssets
 			
 
 		}
+		
+		#endregion
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	
 }
