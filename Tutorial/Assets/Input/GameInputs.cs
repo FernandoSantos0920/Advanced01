@@ -156,7 +156,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Console"",
+                    ""groups"": "";Console;Gamepad"",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -222,7 +222,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Console"",
+                    ""groups"": "";Console;Gamepad"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -244,7 +244,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Console"",
+                    ""groups"": "";Console;Gamepad"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -266,7 +266,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Console"",
+                    ""groups"": "";Console;Gamepad"",
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -331,8 +331,8 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""Console"",
-            ""bindingGroup"": ""Console"",
+            ""name"": ""Gamepad"",
+            ""bindingGroup"": ""Gamepad"",
             ""devices"": [
                 {
                     ""devicePath"": ""<Gamepad>"",
@@ -679,17 +679,17 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             return asset.controlSchemes[m_TecladoAndMousseSchemeIndex];
         }
     }
-    private int m_ConsoleSchemeIndex = -1;
+    private int m_GamepadSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
     /// </summary>
     /// <seealso cref="UnityEngine.InputSystem.InputControlScheme" />
-    public InputControlScheme ConsoleScheme
+    public InputControlScheme GamepadScheme
     {
         get
         {
-            if (m_ConsoleSchemeIndex == -1) m_ConsoleSchemeIndex = asset.FindControlSchemeIndex("Console");
-            return asset.controlSchemes[m_ConsoleSchemeIndex];
+            if (m_GamepadSchemeIndex == -1) m_GamepadSchemeIndex = asset.FindControlSchemeIndex("Gamepad");
+            return asset.controlSchemes[m_GamepadSchemeIndex];
         }
     }
     /// <summary>

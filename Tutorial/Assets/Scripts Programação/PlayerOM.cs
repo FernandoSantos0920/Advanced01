@@ -3,18 +3,28 @@ using UnityEngine;
 
 public static class PlayerOM 
 {
-    public static Action CollectedCoin;
+  
+    public static Action<PlayerIdentifier.Player> PlayerRegistered;
+    
+    public static Action<PlayerIdentifier.Player> CollectedCoin;
    
-    public static Action<int> ChangeCoins;
+    public static Action<PlayerIdentifier.Player, int> ChangeCoins;
 
-    public static void CoinsAreChanged(int quantidade)
+  
+    
+    public static void RegisterPlayer(PlayerIdentifier.Player player)
     {
-       ChangeCoins?.Invoke(quantidade);
+        PlayerRegistered?.Invoke(player);
     }
     
-    public static void CoinAreCollected()
+    public static void CoinsAreChanged(PlayerIdentifier.Player player, int quantidade)
     {
-        CollectedCoin?.Invoke();
+       ChangeCoins?.Invoke(player, quantidade);
+    }
+    
+    public static void CoinAreCollected(PlayerIdentifier.Player player)
+    {
+        CollectedCoin?.Invoke(player);
     }
     
 }

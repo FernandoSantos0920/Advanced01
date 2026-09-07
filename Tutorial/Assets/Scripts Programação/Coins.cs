@@ -20,8 +20,15 @@ public class Coins : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            PlayerOM.CoinAreCollected();
-            Destroy(gameObject);
+          
+            PlayerIdentifier playerID = collision.GetComponent<PlayerIdentifier>();
+
+            if (playerID != null)
+            {
+                PlayerOM.CoinAreCollected(playerID.ID);
+                Destroy(gameObject);
+            }
+          
         }
     }
     

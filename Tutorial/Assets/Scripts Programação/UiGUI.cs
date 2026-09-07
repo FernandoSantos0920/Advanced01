@@ -6,10 +6,10 @@ public class UiGUI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     
     [SerializeField] TextMeshProUGUI coins;
-    
-    void Start()
+   private IDdaUI iddaUI;
+    void Awake()
     {
-        
+        iddaUI = GetComponent<IDdaUI>();
     }
 
     // Update is called once per frame
@@ -25,12 +25,18 @@ public class UiGUI : MonoBehaviour
     
     private void OnDisable()
     {
-        PlayerOM.ChangeCoins += UpdateCoinsText;
+        PlayerOM.ChangeCoins -= UpdateCoinsText;
     }
 
 
-    private void UpdateCoinsText(int quantidade)
+    private void UpdateCoinsText(PlayerIdentifier.Player player, int quantidade)
     {
+
+        if (player != iddaUI.ID)
+        {
+            return;
+        }
+       
         coins.text = quantidade.ToString();
     }
 }

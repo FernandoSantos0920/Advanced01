@@ -18,6 +18,9 @@ namespace StarterAssets
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
+        private PlayerIdentifier playerID;
+        
+        
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
 
@@ -137,6 +140,9 @@ public bool IsRespawning { get; set; } = false;
 
         private void Start()
 {
+  
+    playerID = GetComponent<PlayerIdentifier>();
+    
     _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
     _hasAnimator = TryGetComponent(out _animator);
@@ -420,7 +426,45 @@ public bool IsRespawning { get; set; } = false;
 
     Debug.Log($"Camera Yaw reset to {targetYaw} degrees.");
 }
+        
+        
+        
+        
+         #region Observer do Player em acao
+            
+            private void OnEnable()
+            {
+                PlayerOM.ChangeCoins += OnCoinsChanged;
+            }
+
+
+            private void OnDisable()
+            {
+                PlayerOM.ChangeCoins -= OnCoinsChanged;
+            }
+
+            private void OnCoinsChanged(PlayerIdentifier.Player player, int quantidade)
+            {
+                if (player != playerID.ID)
+                {
+                    return;
+                }
+                
+                MoveSpeed += 1f;
+            }
+            
+            
+            #endregion
+        
+        
+        
+        
+        
     }
 
+    
+   
+    
+    
     
 }
