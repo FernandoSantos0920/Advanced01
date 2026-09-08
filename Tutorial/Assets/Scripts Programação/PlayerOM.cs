@@ -10,7 +10,7 @@ public static class PlayerOM
    
     public static Action<PlayerIdentifier.Player, int> ChangeCoins;
 
-  
+     public static Action<PlayerIdentifier.Player> PlayerVictory;
     
     public static void RegisterPlayer(PlayerIdentifier.Player player)
     {
@@ -27,4 +27,8 @@ public static class PlayerOM
         CollectedCoin?.Invoke(player);
     }
     
+    public static void PlayerWinned(PlayerIdentifier.Player player)
+    {
+        PlayerVictory?.Invoke(player);
+    }
 }

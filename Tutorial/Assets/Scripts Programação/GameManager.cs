@@ -11,6 +11,14 @@ public class GameManager : MonoBehaviour
     
     private State changeState;
 
+    [SerializeField] private int totalcoins;
+    private int coinsCollected;
+    private int Player1Coins;    
+    private int Player2Coins;
+
+
+    private bool gameEnded;
+
     #region Singleton
 
     void Awake()
@@ -121,11 +129,14 @@ public class GameManager : MonoBehaviour
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        PlayerOM.ChangeCoins += OnCoinsChanged;
     }
 
     void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        PlayerOM.ChangeCoins -= OnCoinsChanged;
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -154,5 +165,46 @@ public class GameManager : MonoBehaviour
             playerInput.ActivateInput();
     }
 
+    private void OnCoinsChanged(PlayerIdentifier.Player player, int quantidade)
+    {
+        if (gameEnded)
+        {
+            return;
+        }
+
+        if (player == PlayerIdentifier.Player.Player1)
+        {
+            Player1Coins = quantidade;
+        }
+        else if (player == PlayerIdentifier.Player.Player2)
+        {
+            Player2Coins = quantidade;
+        }
+        
+        coinsCollected += 1;
+
+        if (coinsCollected < totalcoins)
+        {
+            return;
+        }
+
+        MatchEnded();
+    }
+
+
+    private void MatchEnded()
+    {
+        gameEnded = true;
+
+        if (Player1Coins > Player2Coins)
+        {
+            PlayerOM.PlayerWinned(PlayerIdentifier.Player.Player1);
+        }
+        else if (Player2Coins > Player1Coins)
+        {
+            PlayerOM.PlayerWinned(PlayerIdentifier.Player.Player2);
+        }
+    
+    }
     #endregion
 }
