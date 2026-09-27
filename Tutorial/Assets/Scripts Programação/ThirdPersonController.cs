@@ -4,13 +4,10 @@
 using UnityEngine.InputSystem;
 #endif
 
-/* Note: animations are called via the controller for both the character and capsule using animator null checks
- */
-
 namespace StarterAssets
 {
     [RequireComponent(typeof(CharacterController))]
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
     public class ThirdPersonController : MonoBehaviour
@@ -28,6 +25,9 @@ namespace StarterAssets
         [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
 
+        [Tooltip("Rotation speed of the Player when pressing A/D")]
+        public float RotationSpeed = 180f;
+
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
 
@@ -39,31 +39,31 @@ namespace StarterAssets
         [Tooltip("The height the player can jump")]
         public float JumpHeight = 1.2f;
 
-        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+        [Tooltip("The character uses its own gravity value")]
         public float Gravity = -15.0f;
 
         [Space(10)]
-        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
+        [Tooltip("Time required to pass before being able to jump again")]
         public float JumpTimeout = 0.50f;
 
-        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
+        [Tooltip("Time required to pass before entering the fall state")]
         public float FallTimeout = 0.15f;
 
         [Header("Player Grounded")]
-        [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
+        [Tooltip("If the character is grounded or not")]
         public bool Grounded = true;
 
         [Tooltip("Useful for rough ground")]
         public float GroundedOffset = -0.14f;
 
-        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
+        [Tooltip("The radius of the grounded check")]
         public float GroundedRadius = 0.28f;
 
         [Tooltip("What layers the character uses as ground")]
         public LayerMask GroundLayers;
 
         [Header("Cinemachine")]
-        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
+        [Tooltip("The follow target set in the Cinemachine Camera")]
         public GameObject CinemachineCameraTarget;
 
         [Tooltip("How far in degrees can you move the camera up")]
@@ -72,18 +72,20 @@ namespace StarterAssets
         [Tooltip("How far in degrees can you move the camera down")]
         public float BottomClamp = -30.0f;
 
-        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
+        [Tooltip("Additional degrees to override the camera")]
         public float CameraAngleOverride = 0.0f;
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
-        [Tooltip("Trava a rotação horizontal da câmera atrás do Player")]
-        public bool LockCameraRotation = false;
+        [Header("Camera Rotation")]
+        [Tooltip("Camera follows the Player rotation automatically")]
+        public bool LockCameraRotation = true;
 
+        [Tooltip("Sensitivity used when controlling the camera with Look")]
         public Vector2 LookSensitivity = new Vector2(7.5f, 5.0f);
 
-        // cinemachine
+        // Cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
 
@@ -91,29 +93,28 @@ namespace StarterAssets
         private Vector3 _cameraStartingPosition;
         private Quaternion _cameraStartingRotation;
 
-        // Variable to indicate if we are resetting the camera 
+        // Respawn
         public bool IsRespawning { get; set; } = false;
 
-        // player
+        // Player
         private float _speed;
         private float _animationBlend;
-        private float _targetRotation = 0.0f;
-        private float _rotationVelocity;
+
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
-        // timeout deltatime
+        // Timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
 
-        // animation IDs
+        // Animation IDs
         private int _animIDSpeed;
         private int _animIDGrounded;
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
 
@@ -121,47 +122,42 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
 
-        [SerializeField] Camera _mainCameraPlayer;
-
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
-
-        private bool IsCurrentDeviceMouse
-        {
-            get
-            {
-#if ENABLE_INPUT_SYSTEM
-                return _playerInput.currentControlScheme == "Keyboard";
-#else
-                return false;
-#endif
-            }
-        }
 
         private void Start()
         {
             playerID = GetComponent<PlayerIdentifier>();
 
-            _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
             _hasAnimator = TryGetComponent(out _animator);
+
             _controller = GetComponent<CharacterController>();
+
             _input = GetComponent<StarterAssetsInputs>();
 
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
-            Debug.LogError("Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+            Debug.LogError(
+                "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix this"
+            );
 #endif
 
             AssignAnimationIDs();
 
-            // Save the starting camera position and rotation
-            _cameraStartingPosition = CinemachineCameraTarget.transform.position;
-            _cameraStartingRotation = CinemachineCameraTarget.transform.rotation;
+            // A câmera começa alinhada com o Player
+            _cinemachineTargetYaw = transform.eulerAngles.y;
+            _cinemachineTargetPitch = 0f;
 
-            // reset our timeouts on start
+            // Salva posição e rotação inicial da câmera
+            _cameraStartingPosition =
+                CinemachineCameraTarget.transform.position;
+
+            _cameraStartingRotation =
+                CinemachineCameraTarget.transform.rotation;
+
+            // Reset dos timeouts
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
         }
@@ -182,127 +178,229 @@ namespace StarterAssets
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed = Animator.StringToHash("Speed");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDSpeed =
+                Animator.StringToHash("Speed");
+
+            _animIDGrounded =
+                Animator.StringToHash("Grounded");
+
+            _animIDJump =
+                Animator.StringToHash("Jump");
+
+            _animIDFreeFall =
+                Animator.StringToHash("FreeFall");
+
+            _animIDMotionSpeed =
+                Animator.StringToHash("MotionSpeed");
         }
 
         private void GroundedCheck()
         {
             Vector3 spherePosition = new Vector3(
-                transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+                transform.position.x,
+                transform.position.y - GroundedOffset,
+                transform.position.z
+            );
 
             Grounded = Physics.CheckSphere(
-                spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+                spherePosition,
+                GroundedRadius,
+                GroundLayers,
+                QueryTriggerInteraction.Ignore
+            );
 
             if (_hasAnimator)
             {
-                _animator.SetBool(_animIDGrounded, Grounded);
+                _animator.SetBool(
+                    _animIDGrounded,
+                    Grounded
+                );
             }
         }
 
         private void CameraRotation()
         {
-            // If respawning, reset to starting position and rotation
+            // ==========================================
+            // RESPAWN
+            // ==========================================
+
             if (IsRespawning)
             {
-                _cinemachineTargetYaw = 0f;
+                _cinemachineTargetYaw =
+                    transform.eulerAngles.y;
+
                 _cinemachineTargetPitch = 0f;
 
-                CinemachineCameraTarget.transform.position = _cameraStartingPosition;
-                CinemachineCameraTarget.transform.rotation = _cameraStartingRotation;
+                CinemachineCameraTarget.transform.position =
+                    _cameraStartingPosition;
+
+                CinemachineCameraTarget.transform.rotation =
+                    Quaternion.Euler(
+                        0f,
+                        _cinemachineTargetYaw,
+                        0f
+                    );
 
                 IsRespawning = false;
+
                 return;
             }
 
+            // ==========================================
+            // CÂMERA ATRÁS DO PLAYER
+            // ==========================================
+
             if (LockCameraRotation)
             {
-                // Camera follows the Player's horizontal rotation
-                _cinemachineTargetYaw = transform.eulerAngles.y;
+                // A câmera acompanha a rotação horizontal
+                // do Player.
+                _cinemachineTargetYaw =
+                    transform.eulerAngles.y;
 
-                // Still allows looking up and down
-                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
-                {
-                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * LookSensitivity.y;
-                }
-            }
-            else
-            {
-                // Normal camera rotation
-                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
-                {
-                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * LookSensitivity.x;
-
-                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * LookSensitivity.y;
-                }
+                // Atualmente a câmera não usa Look.
+                _cinemachineTargetPitch = 0f;
             }
 
-            _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+            _cinemachineTargetPitch = ClampAngle(
+                _cinemachineTargetPitch,
+                BottomClamp,
+                TopClamp
+            );
 
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+            CinemachineCameraTarget.transform.rotation =
+                Quaternion.Euler(
+                    _cinemachineTargetPitch +
+                    CameraAngleOverride,
 
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+                    _cinemachineTargetYaw,
+
+                    0f
+                );
         }
 
         private void Move()
         {
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed =
+                _input.sprint
+                    ? SprintSpeed
+                    : MoveSpeed;
+
+            // ==========================================
+            // VELOCIDADE
+            // ==========================================
 
             if (_input.move == Vector2.zero)
+            {
                 targetSpeed = 0.0f;
+            }
 
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+            float currentHorizontalSpeed =
+                new Vector3(
+                    _controller.velocity.x,
+                    0.0f,
+                    _controller.velocity.z
+                ).magnitude;
 
             float speedOffset = 0.1f;
 
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+            float inputMagnitude =
+                _input.analogMovement
+                    ? _input.move.magnitude
+                    : 1f;
 
-            if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
+            if (
+                currentHorizontalSpeed <
+                targetSpeed - speedOffset ||
+
+                currentHorizontalSpeed >
+                targetSpeed + speedOffset
+            )
             {
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+                _speed = Mathf.Lerp(
+                    currentHorizontalSpeed,
+                    targetSpeed * inputMagnitude,
+                    Time.deltaTime *
+                    SpeedChangeRate
+                );
 
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
+                _speed =
+                    Mathf.Round(
+                        _speed * 1000f
+                    ) / 1000f;
             }
             else
             {
                 _speed = targetSpeed;
             }
 
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate
-            );
+            _animationBlend =
+                Mathf.Lerp(
+                    _animationBlend,
+                    targetSpeed,
+                    Time.deltaTime *
+                    SpeedChangeRate
+                );
 
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-            Vector3 inputDirection =
-                new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-            if (_input.move != Vector2.zero)
-            { 
-                
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCameraPlayer.transform.eulerAngles.y;
-
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            if (_animationBlend < 0.01f)
+            {
+                _animationBlend = 0f;
             }
 
-            Vector3 targetDirection =
-                Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            // ==========================================
+            // A/D = ROTACIONAR PLAYER
+            // ==========================================
 
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            if (Mathf.Abs(_input.move.x) > _threshold)
+            {
+                float rotation =
+                    _input.move.x *
+                    RotationSpeed *
+                    Time.deltaTime;
+
+                transform.Rotate(
+                    0f,
+                    rotation,
+                    0f
+                );
+            }
+
+            // ==========================================
+            // W/S = ANDAR PARA FRENTE / TRÁS
+            // ==========================================
+
+            Vector3 targetDirection =
+                transform.forward *
+                _input.move.y;
+
+            _controller.Move(
+                targetDirection.normalized *
+                (_speed * Time.deltaTime)
+
+                +
+
+                new Vector3(
+                    0.0f,
+                    _verticalVelocity,
+                    0.0f
+                ) *
+                Time.deltaTime
+            );
+
+            // ==========================================
+            // ANIMAÇÕES
+            // ==========================================
 
             if (_hasAnimator)
             {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
+                _animator.SetFloat(
+                    _animIDSpeed,
+                    _animationBlend
+                );
 
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                _animator.SetFloat(
+                    _animIDMotionSpeed,
+                    inputMagnitude
+                );
             }
         }
 
@@ -310,12 +408,20 @@ namespace StarterAssets
         {
             if (Grounded)
             {
-                _fallTimeoutDelta = FallTimeout;
+                _fallTimeoutDelta =
+                    FallTimeout;
 
                 if (_hasAnimator)
                 {
-                    _animator.SetBool(_animIDJump, false);
-                    _animator.SetBool(_animIDFreeFall, false);
+                    _animator.SetBool(
+                        _animIDJump,
+                        false
+                    );
+
+                    _animator.SetBool(
+                        _animIDFreeFall,
+                        false
+                    );
                 }
 
                 if (_verticalVelocity < 0.0f)
@@ -323,35 +429,51 @@ namespace StarterAssets
                     _verticalVelocity = -2f;
                 }
 
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                if (
+                    _input.jump &&
+                    _jumpTimeoutDelta <= 0.0f
+                )
                 {
                     _verticalVelocity =
-                        Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                        Mathf.Sqrt(
+                            JumpHeight *
+                            -2f *
+                            Gravity
+                        );
 
                     if (_hasAnimator)
                     {
-                        _animator.SetBool(_animIDJump, true);
+                        _animator.SetBool(
+                            _animIDJump,
+                            true
+                        );
                     }
                 }
 
                 if (_jumpTimeoutDelta >= 0.0f)
                 {
-                    _jumpTimeoutDelta -= Time.deltaTime;
+                    _jumpTimeoutDelta -=
+                        Time.deltaTime;
                 }
             }
             else
             {
-                _jumpTimeoutDelta = JumpTimeout;
+                _jumpTimeoutDelta =
+                    JumpTimeout;
 
                 if (_fallTimeoutDelta >= 0.0f)
                 {
-                    _fallTimeoutDelta -= Time.deltaTime;
+                    _fallTimeoutDelta -=
+                        Time.deltaTime;
                 }
                 else
                 {
                     if (_hasAnimator)
                     {
-                        _animator.SetBool(_animIDFreeFall, true);
+                        _animator.SetBool(
+                            _animIDFreeFall,
+                            true
+                        );
                     }
                 }
 
@@ -360,79 +482,49 @@ namespace StarterAssets
 
             if (_verticalVelocity < _terminalVelocity)
             {
-                _verticalVelocity += Gravity * Time.deltaTime;
+                _verticalVelocity +=
+                    Gravity *
+                    Time.deltaTime;
             }
         }
 
         private static float ClampAngle(
-            float lfAngle, float lfMin, float lfMax)
+            float lfAngle,
+            float lfMin,
+            float lfMax)
         {
             if (lfAngle < -360f)
+            {
                 lfAngle += 360f;
+            }
 
             if (lfAngle > 360f)
+            {
                 lfAngle -= 360f;
+            }
 
-            return Mathf.Clamp(lfAngle, lfMin, lfMax);
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Color transparentGreen =
-                new Color(0.0f, 1.0f, 0.0f, 0.35f);
-
-            Color transparentRed =
-                new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
-            if (Grounded)
-                Gizmos.color = transparentGreen;
-            else
-                Gizmos.color = transparentRed;
-
-            Gizmos.DrawSphere(
-                new Vector3(
-                    transform.position.x, transform.position.y - GroundedOffset, transform.position.z
-                ),
-                GroundedRadius
+            return Mathf.Clamp(
+                lfAngle,
+                lfMin,
+                lfMax
             );
         }
 
-        private void OnFootstep(AnimationEvent animationEvent)
+        public void ResetCameraRotation(
+            float targetYaw)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
-            {
-                if (FootstepAudioClips.Length > 0)
-                {
-                    var index = Random.Range(
-                        0,
-                        FootstepAudioClips.Length
-                    );
+            _cinemachineTargetYaw =
+                targetYaw;
 
-                    AudioSource.PlayClipAtPoint(
-                        FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume
-                    );
-                }
-            }
-        }
-
-        private void OnLand(AnimationEvent animationEvent)
-        {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
-            {
-                AudioSource.PlayClipAtPoint(
-                    LandingAudioClip,
-                    transform.TransformPoint(_controller.center),
-                    FootstepAudioVolume
-                );
-            }
-        }
-
-        public void ResetCameraRotation(float targetYaw)
-        {
-            _cinemachineTargetYaw = targetYaw; _cinemachineTargetPitch = 0f;
+            _cinemachineTargetPitch =
+                0f;
 
             CinemachineCameraTarget.transform.rotation =
-                Quaternion.Euler(_cinemachineTargetPitch, _cinemachineTargetYaw, 0f);
+                Quaternion.Euler(
+                    0f,
+                    _cinemachineTargetYaw,
+                    0f
+                );
 
             Debug.Log(
                 $"Camera Yaw reset to {targetYaw} degrees."
@@ -443,12 +535,14 @@ namespace StarterAssets
 
         private void OnEnable()
         {
-            PlayerOM.ChangeCoins += OnCoinsChanged;
+            PlayerOM.ChangeCoins +=
+                OnCoinsChanged;
         }
 
         private void OnDisable()
         {
-            PlayerOM.ChangeCoins -= OnCoinsChanged;
+            PlayerOM.ChangeCoins -=
+                OnCoinsChanged;
         }
 
         private void OnCoinsChanged(
@@ -465,5 +559,83 @@ namespace StarterAssets
         }
 
         #endregion
+
+        private void OnDrawGizmosSelected()
+        {
+            Color transparentGreen =
+                new Color(
+                    0.0f,
+                    1.0f,
+                    0.0f,
+                    0.35f
+                );
+
+            Color transparentRed =
+                new Color(
+                    1.0f,
+                    0.0f,
+                    0.0f,
+                    0.35f
+                );
+
+            Gizmos.color =
+                Grounded
+                    ? transparentGreen
+                    : transparentRed;
+
+            Gizmos.DrawSphere(
+                new Vector3(
+                    transform.position.x,
+                    transform.position.y -
+                    GroundedOffset,
+                    transform.position.z
+                ),
+                GroundedRadius
+            );
+        }
+
+        private void OnFootstep(
+            AnimationEvent animationEvent)
+        {
+            if (
+                animationEvent.animatorClipInfo.weight >
+                0.5f
+            )
+            {
+                if (FootstepAudioClips.Length > 0)
+                {
+                    var index = Random.Range(
+                        0,
+                        FootstepAudioClips.Length
+                    );
+
+                    AudioSource.PlayClipAtPoint(
+                        FootstepAudioClips[index],
+                        transform.TransformPoint(
+                            _controller.center
+                        ),
+                        FootstepAudioVolume
+                    );
+                }
+            }
+        }
+
+        private void OnLand(
+            AnimationEvent animationEvent)
+        {
+            if (
+                animationEvent.animatorClipInfo.weight >
+                0.5f
+            )
+            {
+                AudioSource.PlayClipAtPoint(
+                    LandingAudioClip,
+                    transform.TransformPoint(
+                        _controller.center
+                    ),
+                    FootstepAudioVolume
+                );
+            }
+        }
     }
 }
