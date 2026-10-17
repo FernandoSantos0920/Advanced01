@@ -10,7 +10,11 @@ public static class PlayerOM
    
     public static Action<PlayerIdentifier.Player, int> ChangeCoins;
 
-     public static Action<PlayerIdentifier.Player> PlayerVictory;
+    public static Action<PlayerIdentifier.Player> PlayerVictory;
+     
+    public static Action<PlayerIdentifier.Player> CollectedStar;
+     
+    public static Action<PlayerIdentifier.Player, int> ChangeStars;
     
     public static void RegisterPlayer(PlayerIdentifier.Player player)
     {
@@ -25,6 +29,16 @@ public static class PlayerOM
     public static void CoinAreCollected(PlayerIdentifier.Player player)
     {
         CollectedCoin?.Invoke(player);
+    }
+    
+    public static void StarsAreChanged(PlayerIdentifier.Player player, int quantidade)
+    {
+        ChangeStars?.Invoke(player, quantidade);
+    }
+    
+    public static void StarAreCollected(PlayerIdentifier.Player player)
+    {
+        CollectedStar?.Invoke(player);
     }
     
     public static void PlayerWinned(PlayerIdentifier.Player player)

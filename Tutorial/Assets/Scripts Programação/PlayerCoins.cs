@@ -4,6 +4,8 @@ public class PlayerCoins : MonoBehaviour
 {
     private PlayerIdentifier playerID;
     private int coins;
+
+    private int stars;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
 
@@ -15,11 +17,13 @@ public class PlayerCoins : MonoBehaviour
     private void OnEnable()
     {
          PlayerOM.CollectedCoin += Collectcoins;
+         PlayerOM.CollectedStar += Collectstars;
     }
     
     private void OnDisable()
     {
          PlayerOM.CollectedCoin -= Collectcoins;
+         PlayerOM.CollectedStar -= Collectstars;
     }
     
     public void Collectcoins(PlayerIdentifier.Player player)
@@ -34,4 +38,18 @@ public class PlayerCoins : MonoBehaviour
             coins += 1;
             PlayerOM.CoinsAreChanged(playerID.ID, coins);
     }
+    
+    public void Collectstars(PlayerIdentifier.Player player)
+    {
+        Debug.Log("Peguei uma Estrela");
+          
+        if (player != playerID.ID)
+        {
+            return;
+        }
+                
+        stars += 1;
+        PlayerOM.StarsAreChanged(playerID.ID, stars);
+    }
+    
 }

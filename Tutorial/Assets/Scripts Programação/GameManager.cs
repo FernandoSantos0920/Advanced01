@@ -10,11 +10,11 @@ public class GameManager : MonoBehaviour
 
     
     private State changeState;
-
-    [SerializeField] private int totalcoins;
-    private int coinsCollected;
-    private int Player1Coins;    
-    private int Player2Coins;
+    
+    [SerializeField]  private int totalStars;
+    private int starsCollected;
+    private int Player1Stars;    
+    private int Player2Stars;
 
 
     private bool gameEnded;
@@ -41,8 +41,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-       
+        
         StartCoroutine(IniciarDepoisDoBoot());
+       
     }
 
     IEnumerator IniciarDepoisDoBoot()
@@ -130,19 +131,21 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
 
-        PlayerOM.ChangeCoins += OnCoinsChanged;
+        PlayerOM.ChangeStars += OnStarsChanged;
     }
 
     void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
-        PlayerOM.ChangeCoins -= OnCoinsChanged;
+        PlayerOM.ChangeStars -= OnStarsChanged;
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         playerInput = FindFirstObjectByType<PlayerInput>();
-
+        
+        totalStars = FindObjectsByType<Stars>(FindObjectsSortMode.None).Length;
+        
         if (playerInput != null)
         {
           // Debug.Log("Input Valido");
@@ -165,7 +168,7 @@ public class GameManager : MonoBehaviour
             playerInput.ActivateInput();
     }
 
-    private void OnCoinsChanged(PlayerIdentifier.Player player, int quantidade)
+    private void OnStarsChanged(PlayerIdentifier.Player player, int quantidade)
     {
         if (gameEnded)
         {
@@ -174,16 +177,16 @@ public class GameManager : MonoBehaviour
 
         if (player == PlayerIdentifier.Player.Player1)
         {
-            Player1Coins = quantidade;
+            Player1Stars = quantidade;
         }
         else if (player == PlayerIdentifier.Player.Player2)
         {
-            Player2Coins = quantidade;
+            Player2Stars = quantidade;
         }
         
-        coinsCollected += 1;
+        starsCollected += 1;
 
-        if (coinsCollected < totalcoins)
+        if (starsCollected < totalStars)
         {
             return;
         }
@@ -196,11 +199,11 @@ public class GameManager : MonoBehaviour
     {
         gameEnded = true;
 
-        if (Player1Coins > Player2Coins)
+        if (Player1Stars > Player2Stars)
         {
             PlayerOM.PlayerWinned(PlayerIdentifier.Player.Player1);
         }
-        else if (Player2Coins > Player1Coins)
+        else if (Player2Stars > Player1Stars)
         {
             PlayerOM.PlayerWinned(PlayerIdentifier.Player.Player2);
         }
