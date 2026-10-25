@@ -3,34 +3,32 @@ using UnityEngine;
 
 public class Coins : MonoBehaviour
 {
-   private Transform coinTransform;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void Start()
+    [Header("Rotação")]
+    [SerializeField] private float velocidadeRotacao = 90f;
+
+    private void Update()
     {
-        coinTransform = GetComponent<Transform>();
-    }
-    
-    public void Update()
-    {
-        coinTransform.rotation = Quaternion.Euler(coinTransform.rotation.eulerAngles.x, coinTransform.rotation.eulerAngles.y + 0.6f, 0);
+        transform.Rotate(
+            0f,
+            velocidadeRotacao * Time.deltaTime,
+            0f
+        );
     }
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-          
-            PlayerIdentifier playerID = collision.GetComponent<PlayerIdentifier>();
+        if (!collision.CompareTag("Player"))
+            return;
 
-            if (playerID != null)
-            {
-                PlayerOM.CoinAreCollected(playerID.ID);
-                Destroy(gameObject);
-            }
-          
-        }
+        PlayerIdentifier playerID =
+            collision.GetComponent<PlayerIdentifier>();
+
+        if (playerID == null)
+            return;
+
+        PlayerOM.CoinAreCollected(playerID.ID);
+
+        Destroy(gameObject);
     }
-    
     
 }

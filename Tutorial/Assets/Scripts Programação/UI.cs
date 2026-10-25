@@ -21,8 +21,8 @@ public class UI : MonoBehaviour
     public void Play()
     {   
        // Debug.Log("Mudando para estado: Gameplay");
-        GameManager.Instance.TrocaDeCena("GetStarted_Scene", "GUI");
-        
+       GameManager.Instance.TrocaDeCena("SelectRobot", null);
+
     }
     
     public void Quit()

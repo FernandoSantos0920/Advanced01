@@ -53,6 +53,8 @@ namespace StarterAssets
 
         private void Respawn()
 {
+   
+    RegistrarDerrubada();
     // Disable the CharacterController so we can manually adjust position
     if (_characterController != null)
     {
@@ -93,6 +95,31 @@ namespace StarterAssets
                 if (verticalVelocityField != null)
                 {
                     verticalVelocityField.SetValue(controller, 0f);
+                }
+            }
+        }
+        
+        private void RegistrarDerrubada()
+        {
+            PlayerIdentifier identificador =
+                GetComponent<PlayerIdentifier>();
+
+            RobotImpulse impulso =
+                GetComponent<RobotImpulse>();
+
+            if (identificador == null || impulso == null)
+            {
+                return;
+            }
+
+            if (impulso.TryGetLastAttacker(
+                    out PlayerIdentifier.Player atacante))
+            {
+                PlayerIdentifier.Player vitima = identificador.ID;
+
+                if (atacante != vitima)
+                {
+                    PlayerOM.PlayerWasKnockedOut(atacante, vitima);
                 }
             }
         }
