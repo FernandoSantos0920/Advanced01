@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoboData
   roboName: Red
   velocidadeInicial: 3
-  velocidadeSprint: 4
+  velocidadeSprint: 3
   tamanho: 2
-  forcaEmpurrao: 15
+  forcaEmpurrao: 30
   corPrincipal: {r: 1, g: 0, b: 0, a: 1}
   corSecundaria: {r: 0.85919464, g: 0.40346578, b: 0.4343773, a: 1}

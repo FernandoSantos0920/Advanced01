@@ -160,11 +160,9 @@ namespace StarterAssets
 
             AssignAnimationIDs();
 
-            _cameraStartingPosition =
-                CinemachineCameraTarget.transform.position;
+            _cameraStartingPosition = CinemachineCameraTarget.transform.position;
 
-            _cameraStartingRotation =
-                CinemachineCameraTarget.transform.rotation;
+            _cameraStartingRotation = CinemachineCameraTarget.transform.rotation;
 
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
@@ -195,14 +193,9 @@ namespace StarterAssets
 
             tempoRestanteRecarga -= Time.deltaTime;
 
-            float progresso = tempoRecargaAtaque <= 0f
-                ? 1f
-                : 1f - (tempoRestanteRecarga / tempoRecargaAtaque);
+            float progresso = tempoRecargaAtaque <= 0f ? 1f : 1f - (tempoRestanteRecarga / tempoRecargaAtaque);
 
-            PlayerOM.AttackCooldownChanged(
-                playerID.ID,
-                Mathf.Clamp01(progresso)
-            );
+            PlayerOM.AttackCooldownChanged(playerID.ID, Mathf.Clamp01(progresso));
 
             if (tempoRestanteRecarga <= 0f)
             {
@@ -229,18 +222,9 @@ namespace StarterAssets
 
         private void GroundedCheck()
         {
-            Vector3 spherePosition = new Vector3(
-                transform.position.x,
-                transform.position.y - GroundedOffset,
-                transform.position.z
-            );
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
 
-            Grounded = Physics.CheckSphere(
-                spherePosition,
-                GroundedRadius,
-                GroundLayers,
-                QueryTriggerInteraction.Ignore
-            );
+            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 
             if (_hasAnimator)
             {
@@ -255,11 +239,9 @@ namespace StarterAssets
                 _cinemachineTargetYaw = 0f;
                 _cinemachineTargetPitch = 0f;
 
-                CinemachineCameraTarget.transform.position =
-                    _cameraStartingPosition;
+                CinemachineCameraTarget.transform.position = _cameraStartingPosition;
 
-                CinemachineCameraTarget.transform.rotation =
-                    _cameraStartingRotation;
+                CinemachineCameraTarget.transform.rotation = _cameraStartingRotation;
 
                 IsRespawning = false;
                 return;
@@ -269,16 +251,11 @@ namespace StarterAssets
             {
                 _cinemachineTargetYaw = transform.eulerAngles.y;
 
-                if (_input.look.sqrMagnitude >= _threshold &&
-                    !LockCameraPosition)
+                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
                 {
-                    float deltaTimeMultiplier =
-                        IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                    _cinemachineTargetPitch +=
-                        _input.look.y *
-                        deltaTimeMultiplier *
-                        LookSensitivity.y;
+                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * LookSensitivity.y;
                 }
             }
             else
@@ -286,69 +263,37 @@ namespace StarterAssets
                 if (_input.look.sqrMagnitude >= _threshold &&
                     !LockCameraPosition)
                 {
-                    float deltaTimeMultiplier =
-                        IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                    _cinemachineTargetYaw +=
-                        _input.look.x *
-                        deltaTimeMultiplier *
-                        LookSensitivity.x;
+                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * LookSensitivity.x;
 
-                    _cinemachineTargetPitch +=
-                        _input.look.y *
-                        deltaTimeMultiplier *
-                        LookSensitivity.y;
+                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * LookSensitivity.y;
                 }
             }
 
-            _cinemachineTargetYaw = ClampAngle(
-                _cinemachineTargetYaw,
-                float.MinValue,
-                float.MaxValue
-            );
+            _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
 
-            _cinemachineTargetPitch = ClampAngle(
-                _cinemachineTargetPitch,
-                BottomClamp,
-                TopClamp
-            );
+            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
-            CinemachineCameraTarget.transform.rotation =
-                Quaternion.Euler(
-                    _cinemachineTargetPitch + CameraAngleOverride,
-                    _cinemachineTargetYaw,
-                    0.0f
-                );
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
         }
 
         private void Move()
         {
-            float targetSpeed =
-                _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
 
-            float currentHorizontalSpeed =
-                new Vector3(
-                    _controller.velocity.x,
-                    0.0f,
-                    _controller.velocity.z
-                ).magnitude;
+            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
             float speedOffset = 0.1f;
 
-            float inputMagnitude =
-                _input.analogMovement ? _input.move.magnitude : 1f;
+            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
+            if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
             {
-                _speed = Mathf.Lerp(
-                    currentHorizontalSpeed,
-                    targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate
-                );
+                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
 
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
@@ -357,50 +302,27 @@ namespace StarterAssets
                 _speed = targetSpeed;
             }
 
-            _animationBlend = Mathf.Lerp(
-                _animationBlend,
-                targetSpeed,
-                Time.deltaTime * SpeedChangeRate
-            );
+            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
 
-            if (_animationBlend < 0.01f)
+            if (_animationBlend < 0.01f) 
                 _animationBlend = 0f;
 
-            Vector3 inputDirection =
-                new Vector3(
-                    _input.move.x,
-                    0.0f,
-                    _input.move.y
-                ).normalized;
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
             if (_input.move != Vector2.zero)
             {
-                _targetRotation =
-                    Mathf.Atan2(inputDirection.x, inputDirection.z) *
-                    Mathf.Rad2Deg +
-                    _mainCameraPlayer.transform.eulerAngles.y;
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCameraPlayer.transform.eulerAngles.y;
+                
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
 
-                float rotation = Mathf.SmoothDampAngle(
-                    transform.eulerAngles.y,
-                    _targetRotation,
-                    ref _rotationVelocity,
-                    RotationSmoothTime
-                );
-
-                transform.rotation =
-                    Quaternion.Euler(0.0f, rotation, 0.0f);
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
 
             Vector3 targetDirection =
                 Quaternion.Euler(0.0f, _targetRotation, 0.0f) *
                 Vector3.forward;
 
-            _controller.Move(
-                targetDirection.normalized *
-                (_speed * Time.deltaTime) +
-                new Vector3(0.0f, _verticalVelocity, 0.0f) *
-                Time.deltaTime
-            );
+            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             if (_hasAnimator)
             {
@@ -464,10 +386,7 @@ namespace StarterAssets
             }
         }
 
-        private static float ClampAngle(
-            float lfAngle,
-            float lfMin,
-            float lfMax)
+        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
             if (lfAngle < -360f)
                 lfAngle += 360f;
@@ -486,18 +405,9 @@ namespace StarterAssets
             Color transparentRed =
                 new Color(1.0f, 0.0f, 0.0f, 0.35f);
 
-            Gizmos.color = Grounded
-                ? transparentGreen
-                : transparentRed;
+            Gizmos.color = Grounded ? transparentGreen : transparentRed;
 
-            Gizmos.DrawSphere(
-                new Vector3(
-                    transform.position.x,
-                    transform.position.y - GroundedOffset,
-                    transform.position.z
-                ),
-                GroundedRadius
-            );
+            Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
@@ -568,6 +478,7 @@ namespace StarterAssets
 
             MoveSpeed += 1f;
             SprintSpeed += 1f;
+            forcaAtual += 1f;
         }
 
         #endregion
@@ -585,10 +496,8 @@ namespace StarterAssets
 
         private void Atacar()
         {
-            ThirdPersonController[] players =
-                FindObjectsByType<ThirdPersonController>(
-                    FindObjectsSortMode.None
-                );
+            ThirdPersonController[] players = FindObjectsByType<ThirdPersonController>(FindObjectsSortMode.None
+            );
 
             ThirdPersonController oponente = null;
 
@@ -607,42 +516,25 @@ namespace StarterAssets
                 return;
             }
 
-            float distancia = Vector3.Distance(
-                transform.position,
-                oponente.transform.position
-            );
+            float distancia = Vector3.Distance(transform.position, oponente.transform.position);
 
-            Debug.Log(
-                $"{playerID.ID} atacou. " +
-                $"Distância até o oponente: {distancia:F2}"
-            );
+            Debug.Log($"{playerID.ID} atacou. " + $"Distância até o oponente: {distancia:F2}");
 
             if (distancia > alcanceAtaque)
             {
-                Debug.Log(
-                    $"{playerID.ID}: oponente está fora do alcance."
-                );
-
+                Debug.Log($"{playerID.ID}: oponente está fora do alcance.");
                 return;
             }
 
-            float fatorForca = 1f - Mathf.Clamp01(
-                distancia / alcanceAtaque
-            );
+            float fatorForca = 1f - Mathf.Clamp01(distancia / alcanceAtaque);
 
-            float forcaHorizontal = forcaAtual * Mathf.Lerp(
-                0.5f,
-                1.5f,
-                fatorForca
-            );
+            float forcaHorizontal = forcaAtual * Mathf.Lerp(0.5f, 1.5f, fatorForca);
 
-            Vector3 direcaoEmpurrao =
-                transform.forward * forcaHorizontal;
+            Vector3 direcaoEmpurrao = transform.forward * forcaHorizontal;
 
             direcaoEmpurrao.y = forcaVertical;
 
-            RobotImpulse knockback =
-                oponente.GetComponent<RobotImpulse>();
+            RobotImpulse knockback = oponente.GetComponent<RobotImpulse>();
 
             if (knockback != null)
             {
@@ -666,16 +558,10 @@ namespace StarterAssets
                     tempoRestanteRecarga = 0f;
                     ataqueEmRecarga = false;
 
-                    PlayerOM.AttackCooldownChanged(
-                        playerID.ID,
-                        1f
-                    );
+                    PlayerOM.AttackCooldownChanged(playerID.ID, 1f);
                 }
 
-                Debug.Log(
-                    $"{playerID.ID} empurrou {oponente.playerID.ID} " +
-                    $"com força horizontal de {forcaHorizontal:F2}."
-                );
+                Debug.Log($"{playerID.ID} empurrou {oponente.playerID.ID} " + $"com força horizontal de {forcaHorizontal:F2}.");
             }
             else
             {

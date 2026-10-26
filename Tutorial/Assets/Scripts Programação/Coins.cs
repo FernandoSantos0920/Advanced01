@@ -8,11 +8,7 @@ public class Coins : MonoBehaviour
 
     private void Update()
     {
-        transform.Rotate(
-            0f,
-            velocidadeRotacao * Time.deltaTime,
-            0f
-        );
+        transform.Rotate(0f, velocidadeRotacao * Time.deltaTime, 0f);
     }
 
     private void OnTriggerEnter(Collider collision)
