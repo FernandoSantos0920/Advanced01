@@ -16,6 +16,6 @@ MonoBehaviour:
   velocidadeInicial: 6
   velocidadeSprint: 6.6
   tamanho: 0.8
-  forcaEmpurrao: 26
+  forcaEmpurrao: 28
   corPrincipal: {r: 1, g: 1, b: 1, a: 1}
   corSecundaria: {r: 0.5, g: 0.5, b: 0.5, a: 1}
